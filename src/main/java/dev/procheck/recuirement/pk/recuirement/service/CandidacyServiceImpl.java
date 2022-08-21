@@ -132,21 +132,25 @@ public class CandidacyServiceImpl implements CandidacyService {
 	        CriteriaQuery<Candidacy> cq = cb.createQuery(Candidacy.class);
 	        Root<Candidacy> candidacy = cq.from(Candidacy.class);
 	        List<Predicate> predicates = new ArrayList<>();
-	        if (candidacyDto.getTown() != null && candidacyDto.getTown() != "") {
-	            predicates.add(cb.like(candidacy.get("town"), "%" + candidacyDto.getTown() + "%"));
+	        if (candidacyDto.getTown() != null && !candidacyDto.getTown().isEmpty()) {
+	            predicates.add(cb.equal(candidacy.get("town"), candidacyDto.getTown()));
 	        }
-	        if (candidacyDto.getBorough() != null && candidacyDto.getBorough() != "") {
-	            predicates.add(cb.like(candidacy.get("borough"), "%" + candidacyDto.getBorough() + "%"));
+	        if (candidacyDto.getBorough() != null && !candidacyDto.getBorough().isEmpty()) {
+	            predicates.add(cb.equal(candidacy.get("borough"), candidacyDto.getBorough()));
 	        }
-	        if (candidacyDto.getSkills_area() != null && candidacyDto.getSkills_area()!= "") {
-	            predicates.add(cb.like(candidacy.get("skillsArea"), "%" + candidacyDto.getSkills_area() + "%"));
+	        if (candidacyDto.getSkillsArea() != null && !candidacyDto.getSkillsArea().isEmpty()) {
+	            predicates.add(cb.equal(candidacy.get("skillsArea"), candidacyDto.getSkillsArea()));
 	        }
-	        if (candidacyDto.getLevel() != null && candidacyDto.getLevel()!="") {
-	            predicates.add(cb.like(candidacy.get("level"), "%" + candidacyDto.getLevel() + "%"));
+	        if (candidacyDto.getLevel() != null && !candidacyDto.getLevel().isEmpty()) {
+	            predicates.add(cb.equal(candidacy.get("level"), candidacyDto.getLevel()));
 	        }
-	        if (candidacyDto.getExperience() != null && candidacyDto.getExperience() !="" ) {
-	            predicates.add(cb.like(candidacy.get("experience"), "%" + candidacyDto.getExperience() + "%"));
+	        if (candidacyDto.getExperience() != null && !candidacyDto.getExperience().isEmpty() ) {
+	        	predicates.add(cb.equal(candidacy.get("experience"), candidacyDto.getExperience()));
 	        }
+	        if (candidacyDto.getHowDidYouKnowCompany() != null && !candidacyDto.getHowDidYouKnowCompany().isEmpty()) {
+	            predicates.add(cb.equal(candidacy.get("howDidYouKnowCompany"), candidacyDto.getHowDidYouKnowCompany()));
+	        }
+	        
 	        cq.where(predicates.toArray(new Predicate[predicates.size()]));
 	        Query query = entityManager.createQuery(cq);
 	        int pageNumber =pageRequest.getPageNumber();
@@ -154,6 +158,9 @@ public class CandidacyServiceImpl implements CandidacyService {
 	        query.setFirstResult((pageNumber) * pageSize);
 	        query.setMaxResults(pageSize);
 	        List <Candidacy> candidacies = query.getResultList();
-	        return new PageImpl<>(candidacies,pageRequest,candidacies.size());
+	        //
+	        Page<Candidacy> pageResult = candidacyRepository.findAll(pageRequest);
+	        return new PageImpl<>(candidacies,pageRequest,pageResult.getTotalElements());
+	        //return new PageImpl<>(candidacies,pageRequest,candidacies.size());
     }
 }
